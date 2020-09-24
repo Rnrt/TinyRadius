@@ -7,12 +7,14 @@
  */
 package org.tinyradius.test;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
+import org.tinyradius.attribute.RadiusAttribute;
 import org.tinyradius.packet.AccessRequest;
 import org.tinyradius.packet.RadiusPacket;
 import org.tinyradius.util.RadiusException;
 import org.tinyradius.util.RadiusServer;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
 
 /**
  * Test server which terminates after 30 s.
@@ -28,16 +30,17 @@ public class TestServer {
 		RadiusServer server = new RadiusServer() {
 			// Authorize localhost/testing123
 			public String getSharedSecret(InetSocketAddress client) {
-				if (client.getAddress().getHostAddress().equals("127.0.0.1")) {
-					return "testing123";
-				}
-				return null;
+//				if (client.getAddress().getHostAddress().equals("127.0.0.1")) {
+//					return "yjp";
+//				}
+//				return "yjp";
+				return "123456";
 			}
 
 			// Authenticate mw
 			public String getUserPassword(String userName) {
-				if (userName.equals("mw")) {
-					return "test";
+				if (userName.equals("yjp")) {
+					return "123456";
 				}
 				return null;
 			}
@@ -45,16 +48,18 @@ public class TestServer {
 			// Adds an attribute to the Access-Accept packet
 			public RadiusPacket accessRequestReceived(AccessRequest accessRequest, InetSocketAddress client) throws RadiusException {
 				System.out.println("Received Access-Request:\n" + accessRequest);
+				System.out.println();
+				System.out.println(accessRequest.getUserPassword());
 				RadiusPacket packet = super.accessRequestReceived(accessRequest, client);
 				if (packet == null) {
 					System.out.println("Ignore packet.");
-				}
-				else if (packet.getPacketType() == RadiusPacket.ACCESS_ACCEPT) {
+				} else if (packet.getPacketType() == RadiusPacket.ACCESS_ACCEPT) {
+
 					packet.addAttribute("Reply-Message", "Welcome " + accessRequest.getUserName() + "!");
-				}
-				else {
+				} else {
 					System.out.println("Answer:\n" + packet);
 				}
+				System.out.println("Response: \n" + packet);
 				return packet;
 			}
 		};
@@ -67,9 +72,9 @@ public class TestServer {
 
 		System.out.println("Server started.");
 
-		Thread.sleep(1000 * 60 * 30);
-		System.out.println("Stop server");
-		server.stop();
+//		Thread.sleep(1000 * 60 * 60 * 3);
+//		System.out.println("Stop server");
+//		server.stop();
 	}
 
 }

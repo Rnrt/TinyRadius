@@ -11,6 +11,8 @@ import org.tinyradius.packet.AccountingRequest;
 import org.tinyradius.packet.RadiusPacket;
 import org.tinyradius.util.RadiusClient;
 
+import java.util.Base64;
+
 /**
  * Simple Radius command-line client.
  */
@@ -37,6 +39,10 @@ public class TestClient {
 		RadiusClient rc = new RadiusClient(host, shared);
 
 		// 1. Send Access-Request
+		Base64.Encoder encoder = Base64.getEncoder();
+		byte[] encode = encoder.encode((user + ":" + pass).getBytes());
+		String encodeUsername = new String(encode);
+
 		AccessRequest ar = new AccessRequest(user, pass);
 		ar.setAuthProtocol(AccessRequest.AUTH_PAP); // or AUTH_CHAP
 		ar.addAttribute("NAS-Identifier", "this.is.my.nas-identifier.de");
@@ -51,14 +57,14 @@ public class TestClient {
 		System.out.println("Response\n" + response + "\n");
 
 		// 2. Send Accounting-Request
-		AccountingRequest acc = new AccountingRequest("mw", AccountingRequest.ACCT_STATUS_TYPE_START);
-		acc.addAttribute("Acct-Session-Id", "1234567890");
-		acc.addAttribute("NAS-Identifier", "this.is.my.nas-identifier.de");
-		acc.addAttribute("NAS-Port", "0");
+//		AccountingRequest acc = new AccountingRequest("mw", AccountingRequest.ACCT_STATUS_TYPE_START);
+//		acc.addAttribute("Acct-Session-Id", "1234567890");
+//		acc.addAttribute("NAS-Identifier", "this.is.my.nas-identifier.de");
+//		acc.addAttribute("NAS-Port", "0");
 	
-		System.out.println(acc + "\n");	
-		response = rc.account(acc);
-		System.out.println("Response: " + response);
+//		System.out.println(acc + "\n");
+		//	response = rc.account(acc);
+//		System.out.println("Response: " + response);
 		
 		rc.close();
 	}
